@@ -288,57 +288,6 @@ class MinEnv1:
             plt.pause(pause)
             plt.clf()
 
-    def live_plot(self, plot_product_index=None):
-        def live_plot_object(plot_product_index, queue):
-            def plot_action(i, ax):
-                index = np.where(action_note[:, i] == 1)[0]
-                ax.scatter(x=index, y=product_info[index, i], marker='o', color='g')
-                index = np.where(action_note[:, i] == -1)[0]
-                ax.scatter(x=index, y=product_info[index, i], marker='o', color='r')
-
-            action_history = np.array(self.ActionHistory).reshape(-1, self.ProductNumber)
-            if plot_product_index is not None:
-                if len(plot_product_index) > 2:
-                    msg = "plot product can not over 2"
-                    raise ValueError(msg)
-                if len([x for x in plot_product_index if x >= self.ProductNumber]) > 0:
-                    msg = "product index out of range"
-                    raise ValueError(msg)
-                action_note = action_history[:, plot_product_index]
-            else:
-                plot_product_index = [x for x in range(self.ProductNumber) if x < 2]
-                action_note = action_history[:, plot_product_index]
-
-            product_info = self.ProductDataset[:, :-1, plot_product_index].reshape(-1, len(plot_product_index))
-
-            ax1 = plt.subplot2grid((4, 1), (0, 0), rowspan=3)
-            ax1.plot(product_info[:, 0])
-            plot_action(0, ax1)
-
-            if len(plot_product_index) == 2:
-                ax2 = ax1.twinx()
-                ax2.plot(product_info[:, 1])
-                plot_action(1, ax2)
-
-            plt.subplot2grid((4, 1), (3, 0), sharex=ax1)
-            total = np.array(self.CashFlowHistory) + np.array(self.StockValuesHistory)
-            if self.OnlyPlotProfit:
-                plt.plot(total - self.InitBalance)
-            else:
-                plt.plot(total)
-                plt.plot(self.CashFlowHistory, label="Cash Flow")
-                plt.plot(self.StockValuesHistory, label="Stock Values")
-            if pause == 0:
-                plt.show()
-                plt.close()
-            else:
-                plt.pause(pause)
-                plt.clf()
-
-        import multiprocessing
-        pool = multiprocessing.Pool()
-        pool.apply()
-
 
     # Example 1
     '''
